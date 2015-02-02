@@ -1,0 +1,19 @@
+{
+  "name": "beehive-bridge",
+  "version": "0.0.0",
+  "description": "Bridge between platform and MQTT broker",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "IoT"
+  ],
+  "author": "@donkeysharp",
+  "license": "MIT",
+  "devDependencies": {
+    "sockjs": "~0.3.11",
+    "mqtt": "~0.3.13",
+    "request": "~2.48.0"
+  }
+}
