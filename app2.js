@@ -1,12 +1,12 @@
 var mqtt = require('mqtt');
-var config = require('./config');
-var beehive = require('./beehiveBridge');
-var realTime = require('./realTime');
+var config = require('./config').config;
+var beehive = require('./beehiveHttp');
+var realTime = require('./beehiveRealTime');
 
 var httpServer = beehive.createHttpServer();
 var realTimeServer = realTime.createRealTimeServer();
 var validMqttIps = config.validMqttIps;
-var generalMqttClient =
+var generalMqttClient = realTime.generalMQTTClient;
 
 // Start http server and attach real-time server to it
 httpServer.listen(config.http.port, config.http.host);
@@ -33,6 +33,14 @@ beehive.route('POST', '/mqtt/publish', function(req, res) {
   }
 
   var data = req.input;
+
+  try {
+    // Message should always be string
+    console.log('Executing: ', data.topic, data.message);
+    generalMqttClient.publish(data.topic, '' + data.message);
+  } catch(e) {
+    console.log('MQTT PUBLISH ERROR', e);
+  }
 
   res.writeHead(200);
   res.end(JSON.stringify(data));

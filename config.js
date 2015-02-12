@@ -6,6 +6,9 @@ exports.config = {
   },
   mqtt: {
     port: 1883,
-    host: 'localhost'
+    host: 'localhost',
+    generalServer: {
+      userPassword: 'bridge_client'
+    }
   }
 };

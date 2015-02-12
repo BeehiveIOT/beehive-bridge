@@ -1,6 +1,6 @@
 var sockjs = require('sockjs');
 var mqtt = require('mqtt');
-var config = require('./config');
+var config = require('./config').config;
 
 var authenticationHandler = function(socket, data) {
   var mqttClient = mqtt.createClient(config.mqtt.port, config.mqtt.host, {
@@ -83,7 +83,22 @@ echoServer.on('connection', function(socket) {
   });
 });
 
+var userPassword = config.mqtt.generalServer.userPassword;
+var generalMqttClient = mqtt.createClient(config.mqtt.port, config.mqtt.host, {
+  username: userPassword,
+  password: userPassword
+});
+
+generalMqttClient.on('connect', function() {
+  console.log('GENERAL MQTT CLIENT CONNECTED SUCCESSFULLY');
+});
+
+generalMqttClient.on('error', function(err) {
+  this.end();
+});
 
 exports.createRealTimeServer = function() {
   return echoServer;
 };
+
+exports.generalMQTTClient = generalMqttClient;
