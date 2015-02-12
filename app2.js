@@ -36,7 +36,7 @@ beehive.route('POST', '/mqtt/publish', function(req, res) {
 
   try {
     // Message should always be string
-    console.log('Executing: ', data.topic, data.message);
+    console.log('HTTP - Executing: ', data.topic, data.message);
     generalMqttClient.publish(data.topic, '' + data.message);
   } catch(e) {
     console.log('MQTT PUBLISH ERROR', e);
