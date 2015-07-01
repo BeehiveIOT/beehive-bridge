@@ -14,6 +14,7 @@
   "devDependencies": {
     "sockjs": "~0.3.11",
     "mqtt": "~0.3.13",
-    "request": "~2.48.0"
+    "request": "~2.48.0",
+    "mongodb": "~2.0.35"
   }
 }

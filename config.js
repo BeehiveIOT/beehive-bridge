@@ -10,5 +10,14 @@ exports.config = {
     generalServer: {
       userPassword: 'bridge_client'
     }
+  },
+  storage: {
+    type: 'mongodb',
+    mongodb: {
+      host: 'localhost',
+      port: 27017,
+      database: 'beehive',
+      dataCollection: 'deviceData'
+    }
   }
 };

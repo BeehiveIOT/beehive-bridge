@@ -1,6 +1,7 @@
 var sockjs = require('sockjs');
 var mqtt = require('mqtt');
 var config = require('./config').config;
+var dataStorage = require('./storage/data-storage');
 
 var authenticationHandler = function(socket, data) {
   var mqttClient = mqtt.createClient(config.mqtt.port, config.mqtt.host, {
@@ -55,7 +56,7 @@ var sockjsHandlers = {
 
 var onDataHandler = function(msg) {
   if (sockjsHandlers[msg.event]) {
-    console.log('Executing: ', JSON.stringify(msg.data));
+    console.log('Executing Event: ', JSON.stringify(msg.data));
     sockjsHandlers[msg.event].call(this, this, msg.data);
   }
 };
@@ -91,13 +92,48 @@ var generalMqttClient = mqtt.createClient(config.mqtt.port, config.mqtt.host, {
 
 generalMqttClient.on('connect', function() {
   console.log('GENERAL MQTT CLIENT CONNECTED SUCCESSFULLY');
+  generalMqttClient.subscribe('#');
+});
+
+generalMqttClient.on('message', function(topic, message) {
+  if (topic.length <= 37) { return; }
+
+  var data = {
+    pubKey: topic.substring(0,36),
+    dataStream: topic.substring(37),
+    time: new Date().getTime(),
+    value: message
+  };
+  if (dataStorage && dataStorage.connected) {
+    dataStorage.insert(data);
+  }
 });
 
 generalMqttClient.on('error', function(err) {
   this.end();
 });
 
+var onStorageConnected = function(storage) {
+  console.log('Connected to storage');
+};
+var onStorageClosed = function() {
+  console.log('Storage connection closed');
+};
+
+function initDataStorage() {
+  var options = config.storage;
+  var events = {
+    onConnected: onStorageConnected,
+    onClosed: onStorageClosed
+  };
+
+  dataStorage = dataStorage.createDataStorage(options.type, options[options.type], events);
+  dataStorage.connect();
+}
+
 exports.createRealTimeServer = function() {
+  initDataStorage();
+
   return echoServer;
 };
 
